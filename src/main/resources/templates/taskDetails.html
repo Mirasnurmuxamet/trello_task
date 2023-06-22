@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th =  "http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="main_layout.html">
+<div layout:fragment="~{siteContent}">
+    <div class="container mt-3">
+        <a class="btn  btn-outline-dark btn-sm my-1"
+           th:href="@{'/folder_details/'+ ${task.getFolder().getId()}}">Close</a>
+        <div th:if="${task!=null}">
+            <div class="card container shadow-lg mt-5">
+                <div class="my-3">
+                    <label class="form-label"><strong>TASK TITLE</strong></label>
+                    <input type="text" class="form-control" readonly
+                           th:value="${task.getTitle()}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>STATUS</strong></label>
+                    <input type="text" class="form-control" readonly
+                           th:value="${task.getTaskStatus().getStatus()}">
+                </div>
+                <div class="mb-3"><label class="form-label"><strong>DESCRIPTION</strong></label>
+                    <textarea class="form-control" rows="5" readonly
+                              th:text="${task.getDescription()}"></textarea>
+                </div>
+                <div class="mb-3">
+                    <div class="text-center mt-0 mb-2" >
+                        <div class="btn-group" role="group" aria-label="Basic outlined example">
+                            <button type="button"
+                                    class="btn btn-outline-primary px-3"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#update"
+                                    th:if="${task.getTaskStatus().getId()==1 || task.getTaskStatus().getId()==2}" >
+                                UPDATE
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-danger px-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#delete">
+                                DELETE
+                            </button>
+                        </div>
+                    </div>
+                    <!--Modal Update-->
+                    <div class="modal fade"
+                         id="update"
+                         data-bs-backdrop="static"
+                         data-bs-keyboard="false"
+                         tabindex="-1"
+                         aria-labelledby="staticBackdropLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <form th:action="${'/update_task'}" method="post">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">Update task</h1>
+                                        <button type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div>
+                                            <input type="hidden" name="id"
+                                                   th:value="${task.getId()}">
+                                            <input type="hidden" name="folder.id"
+                                                   th:value="${task.getFolder().getId()}">
+                                            <div class="my-3">
+                                                <label class="form-label"><strong>TASK TITLE</strong></label>
+                                                <input type="text" class="form-control"
+                                                       name="title" required
+                                                       th:value="${task.getTitle()}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label"><strong>STATUS</strong></label>
+                                                <select class="form-control" name="taskStatus.id" required
+                                                        th:if="${statusList!=null}">
+                                                    <option
+                                                        th:each="status : ${statusList}"
+                                                        th:value="${status.getId()}"
+                                                        th:text="${status.getStatus()}"
+                                                        th:selected="${status.getId()==task.getTaskStatus().getId()}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3"><label class="form-label">
+                                                <strong>DESCRIPTION</strong></label>
+                                                <textarea class="form-control" rows="5"
+                                                          name="description" required
+                                                          th:text="${task.getDescription()}"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button"
+                                                class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- modal delete-->
+                    <div class="modal fade" id="delete"
+                          data-bs-backdrop="static"
+                          data-bs-keyboard="false"
+                          tabindex="-1"
+                          aria-labelledby="staticBackdropLabel"
+                          aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form th:action="${'/delete_task'}" method="post">
+                            <input type="hidden" name="task_id"
+                                   th:value="${task.getId}">
+                            <input type="hidden" name="folder_id"
+                                   th:value="${task.getFolder().getId()}">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5">Warning</h1>
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">Delete</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div th:if="${task.getTaskStatus().getId()==1 || task.getTaskStatus().getId()==2}"
+                 class="card container shadow-lg  my-2 p-3">
+                <form  th:action="@{'/add_comment'}" method="post">
+                    <div class="row">
+                        <div class="col-12">
+                            <textarea class="form-control" placeholder="Insert comment"
+                                      name="comment" required></textarea>
+                        </div>
+                        <input type="hidden" name="tasks.id" th:value="${task.getId()}">
+                    </div>
+                    <button type="submit" class="btn btn-outline-dark btn-sm mt-3">
+                        ADD COMMENT
+                    </button>
+                </form>
+            </div>
+            <div class="container mt-2" th:if="${commentList != null}">
+                <div class="row my-3" th:each=" comment : ${commentList}">
+                    <div class="list-group shadow-lg col-6 ms-auto" >
+                        <div class="list-group-item list-group-item-action">
+                            <p class="mb-1" th:text="${comment.getComment()}"></p>
+                            <span class="text-body-secondary">
+                                <div class="row-cols-sm-1 ms-auto">
+                                    <form  th:action="${'/delete_comment'}" method="post">
+                                        <input type="hidden" name="commentId"  th:value="${comment.getId()}">
+                                        <input type="hidden" name="taskId"  th:value="${task.getId()}">
+                                        <button th:if="${task.taskStatus.id==1 || task.taskStatus.id==2}"
+                                                type="submit" class="btn btn-outline-danger btn-sm ms-auto mt-3">
+                                            DELETE
+                                        </button>
+                                    </form>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${task==null}" class="container text-center">
+            <h1>Task not found</h1>
+        </div>
+    </div>
+</div>
+</html>

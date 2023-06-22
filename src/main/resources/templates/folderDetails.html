@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th =  "http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="main_layout.html">
+<div layout:fragment="~{siteContent}">
+    <div class="container mt-3">
+        <a class="btn  btn-outline-dark btn-sm my-1" th:href="@{'/'}">Close</a>
+        <div  class="card  container my-2 p-2">
+            <h4 th:text="${folder.getName()}"></h4>
+            <div class="d-inline">
+                <div class="d-inline mb-3" th:each="category : ${folder.getCategories()}">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#deleteCategories"><strong> - </strong>
+                        <strong th:text="${category.getName()}"></strong>
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="deleteCategories"
+                         data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <form th:action="@{'/delete_categories'}" method="post">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">
+                                            Remove Categories
+                                        </h1>
+                                        <button type="button" class="btn-close"
+                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h2>Do you want to remove category?</h2>
+                                    </div>
+                                    <input type="hidden" name="folder_id" th:value="${folder.getId()}">
+                                    <input type="hidden" name="categories_id" th:value="${category.getId()}">
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+                                            Close
+                                        </button>
+                                        <button class="btn btn-primary">Remove</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-inline mb-3">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-success btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#addCategories">
+                        <strong> + Add Categories</strong>
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="addCategories"
+                         data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <form th:action="@{'/add_categories'}" method="post">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">
+                                            Add Categories
+                                        </h1>
+                                        <button type="button" class="btn-close"
+                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <input type="hidden" name="folder_id" th:value="${folder.getId()}">
+                                    <div class="modal-body">
+                                        <div class="mb-3"
+                                             th:if="${categoriesList!=null && categoriesList.size()>0}">
+                                            <label class="form-label">CATEGORIES NAME</label>
+                                            <select class="form-control" name="categories_id">
+                                                <option th:each="categories : ${categoriesList}"
+                                                        th:value="${categories.getId()}"
+                                                        th:text="${categories.getName()}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <h5 th:if="${categoriesList.size()==0}">ALL CATEGORIES SELECTED</h5>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+                                            Close
+                                        </button>
+                                        <button class="btn btn-primary">Add Categories</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+        <div class="mb-3">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-dark"
+                    data-bs-toggle="modal" data-bs-target="#addTask">
+                <strong> + New Task</strong>
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="addTask"
+                 data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form th:action="@{'/add_task'}" method="post">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                                    Add New Task
+                                </h1>
+                                <button type="button" class="btn-close"
+                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">TASK TITLE</label>
+                                    <input type="text" class="form-control" required name="title">
+                                </div>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">TASK DESCRIPTION</label>
+                                    <textarea class="form-control" rows="5"
+                                              name="description"
+                                              required></textarea>
+                                </div>
+                            </div>
+                            <input type="hidden" name="folder.id"
+                                    th:value="${folder.getId()}">
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                                <button class="btn btn-primary">Add Task</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div th:if="${taskList!=null && taskList.size()!=0}">
+            <table class="table table-group-divider">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Task Name</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="task : ${taskList}" >
+                    <td th:text="${task.getId()}"></td>
+                    <td th:text="${task.getTitle()}"></td>
+                    <td th:text="${task.getTaskStatus().getStatus()}"
+                        th:style="${task.getTaskStatus().getId()==1?'color: blue;':
+                        (task.getTaskStatus().getId()==2?'color: yellow;':
+                        (task.getTaskStatus().getId()==3?'color: green;':
+                        (task.getTaskStatus().getId()==4?'color: red;':'')))}"></td>
+                    <td class="col-3"><a class="btn btn-dark btn-sm col-4"
+                           th:href="@{'/task_details/'+${task.getId()}}">View More</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class=" mb-3">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#deleteFolder">
+                <strong> Delete Folder</strong>
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="deleteFolder"
+                 data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form th:action="@{'/delete_folder'}" method="post">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">
+                                    Delete Folder
+                                </h1>
+                                <button type="button" class="btn-close"
+                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <input type="hidden" name="folder_id" th:value="${folder.getId()}">
+                            <div class="modal-body">
+                                <h2>Are you sure?</h2>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                                <button class="btn btn-primary">Delete</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div th:if="${taskList.isEmpty()}" class="container text-center">
+            <h1>Folder empty</h1>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th =  "http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="main_layout.html">
+<div layout:fragment="~{siteContent}">
+    <div class="container mt-3">
+        <div class="mb-3">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-dark"
+                    data-bs-toggle="modal" data-bs-target="#addFolder">
+                <strong> + New Folder</strong>
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="addFolder"
+                 data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form th:action="@{'/add_folder'}" method="post">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                                    Add New Folder
+                                </h1>
+                                <button type="button" class="btn-close"
+                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">FOLDER NAME</label>
+                                    <input type="text" class="form-control" required name="name">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                                <button class="btn btn-primary">Add Folder</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div th:if="${folders!=null}">
+            <div th:each="folder : ${folders}" class="card container shadow-lg  my-2">
+                <div class="row px-4 py-3">
+                    <div class="col-10" >
+                        <h3 th:text="${folder.getName()}"></h3>
+                    </div>
+                </div>
+                <div class="row px-4 py-3 ">
+                    <div  class="col-2">
+                        <a class="btn btn-dark col-11"
+                           th:href="@{'/folder_details/'+${folder.getId()}}">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
